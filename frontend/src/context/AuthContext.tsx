@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { checkAuthStatus, loginUser } from "../components/helpers/api";
 
 interface User {
   name: string;
@@ -25,9 +26,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
     // fetch if the user's cookies are valid then skil login
+    async function checkStatus() {
+      const data = await checkAuthStatus();
+      if (data) {
+        setUser({ email: data.email, name: data.name });
+        setLoggedIn(true);
+      }
+    }
+    checkStatus();
   }, []);
 
-  const login = (email: string, password: string) => {};
+  const login = async (email: string, password: string) => {
+    const data = await loginUser(email, password);
+    if (data) {
+      setUser({ email: data.email, name: data.name });
+      setLoggedIn(true);
+    }
+  };
   const signup = (name: string, email: string, password: string) => {};
   const logout = () => {};
 
